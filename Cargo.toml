@@ -1,0 +1,10 @@
+[package]
+name = "piserver"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7.5"
+serde = "1.0.204"
+tokio = {version = "1.38.0", features=["full"]}
+serde_json = "1.0"
