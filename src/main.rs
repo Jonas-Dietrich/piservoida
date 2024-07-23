@@ -7,13 +7,9 @@ use serde_json::{Value, json};
 async fn main() {
     println!("Hello, world!");
 
-    let oid = startserver().await;
-
-    println!("oiad {}", oid.0);
-
     let app = Router::new()
-        .route("/", get(oida))
-        .route("/start", post(startserver));
+        .route("/start", post(startserver))
+        .route("/power", get(is_server_powered_on));
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
@@ -22,13 +18,23 @@ async fn main() {
     println!("goodbye, world!")
 }
 
-async fn oida() -> &'static str {
-    "Oida"
+async fn is_server_powered_on() -> Json<Value> {
+    let res = Command::new("ping")
+        .args(["192.168.0.75", "-c 1"])
+        .output()
+        .expect("Fehler");
+
+    let rizz = String::from_utf8(res.stdout).unwrap();
+
+    let var = rizz.contains("1 received");
+    println!("on: {var}");
+
+    Json(json!({"on" : var}))
+
 }
 
 async fn startserver() -> Json<Value> {
     let commandpath = "/home/jonas/oida.sh";
-    println!("oid {commandpath}");
 
     let res = Command::new(commandpath)
         .output()
@@ -36,7 +42,7 @@ async fn startserver() -> Json<Value> {
 
     let gyatt = String::from_utf8(res.stdout).unwrap();
 
-    println!("oida: {gyatt}");
+    println!("sent a packet");
 
     Json(json!({"message" : gyatt}))
 } 
