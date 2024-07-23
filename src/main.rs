@@ -1,5 +1,5 @@
 use std::process::Command;
-use axum::{routing::{get, post}, Json, Router};
+use axum::{http::{header::ACCESS_CONTROL_ALLOW_ORIGIN, HeaderValue}, response::{IntoResponse, Response}, routing::{get, post}, Json, Router};
 
 use serde_json::{Value, json};
 
@@ -18,7 +18,7 @@ async fn main() {
     println!("goodbye, world!")
 }
 
-async fn is_server_powered_on() -> Json<Value> {
+async fn is_server_powered_on() -> Response {
     let res = Command::new("ping")
         .args(["192.168.0.75", "-c 1"])
         .output()
@@ -29,11 +29,14 @@ async fn is_server_powered_on() -> Json<Value> {
     let var = rizz.contains("1 received");
     println!("on: {var}");
 
-    Json(json!({"on" : var}))
+    (
+        [("Access-Control-Allow-Origin", "*")],
+        Json(json!({"message" : var}))
+    ).into_response()
 
 }
 
-async fn startserver() -> Json<Value> {
+async fn startserver() -> Response {
     let commandpath = "/home/hawara/wakelappy.sh";
 
     let res = Command::new(commandpath)
@@ -44,5 +47,8 @@ async fn startserver() -> Json<Value> {
 
     println!("sent a packet");
 
-    Json(json!({"message" : gyatt}))
+    (
+        [("Access-Control-Allow-Origin", "*")],
+        Json(json!({"message" : gyatt}))
+    ).into_response()
 } 
