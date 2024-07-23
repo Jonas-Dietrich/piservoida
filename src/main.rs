@@ -34,7 +34,7 @@ async fn is_server_powered_on() -> Json<Value> {
 }
 
 async fn startserver() -> Json<Value> {
-    let commandpath = "/home/jonas/oida.sh";
+    let commandpath = "/home/hawara/wakelappy.sh";
 
     let res = Command::new(commandpath)
         .output()
